@@ -1,0 +1,56 @@
+{
+	"ImportPath": "scheduler-microservice",
+	"GoVersion": "go1.15",
+	"GodepVersion": "v80",
+	"Deps": [
+		{
+			"ImportPath": "github.com/dgrijalva/jwt-go",
+			"Comment": "v3.2.0-20-gdc14462",
+			"Rev": "dc14462fd58732591c7fa58cc8496d6824316a82"
+		},
+		{
+			"ImportPath": "github.com/gorilla/handlers",
+			"Comment": "v1.4.2-4-gca591ca",
+			"Rev": "ca591caf892ebd3dc10913d463cb4f25e5fa3d90"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.7.4",
+			"Rev": "75dcda0896e109a2a22c9315bca3bb21b87b2ba5"
+		},
+		{
+			"ImportPath": "github.com/joho/godotenv",
+			"Comment": "v1.3.0-17-ga4d9cf1",
+			"Rev": "a4d9cf1d6d98b3f745684f5879cd3de920fece83"
+		},
+		{
+			"ImportPath": "github.com/joho/godotenv/autoload",
+			"Comment": "v1.3.0-17-ga4d9cf1",
+			"Rev": "a4d9cf1d6d98b3f745684f5879cd3de920fece83"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Comment": "v1.3.0-6-g356e267",
+			"Rev": "356e267cd3f45ee1303b7d8765e3583cb949950e"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/oid",
+			"Comment": "v1.3.0-6-g356e267",
+			"Rev": "356e267cd3f45ee1303b7d8765e3583cb949950e"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/scram",
+			"Comment": "v1.3.0-6-g356e267",
+			"Rev": "356e267cd3f45ee1303b7d8765e3583cb949950e"
+		},
+		{
+			"ImportPath": "github.com/twinj/uuid",
+			"Comment": "v0.1.0",
+			"Rev": "7bbe408d339787c56ec15568c947c0959db1b275"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "7e3656a0809f6f95abd88ac65313578f80b00df2"
+		}
+	]
+}
