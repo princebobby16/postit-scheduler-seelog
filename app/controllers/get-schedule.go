@@ -48,9 +48,24 @@ func GetSchedule(w http.ResponseWriter, r *http.Request) {
 	go SchedulePosts(posts, posted, post, schedule.Duration)
 	go SendPostToFaceBook(post, posted, tenantNamespace)
 
+	var response = models.StandardResponse{
+		Data: models.Data{
+			Id:        transactionId,
+			UiMessage: "Schedule received and being worked on",
+		},
+		Meta: models.Meta{
+			Timestamp:     time.Now(),
+			TransactionId: transactionId,
+			TraceId:       "",
+			Status:        "SUCCESS",
+		},
+	}
+
+	_ = json.NewEncoder(w).Encode(response)
 }
 
 func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespace string, postsChannel chan<- []models.Post) {
+	defer close(postsChannel)
 	if schedule.ScheduleId != "" {
 		/* Get all schedules that aren't due yet */
 		if !schedule.To.Before(time.Now()) {

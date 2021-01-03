@@ -10,7 +10,6 @@ type (
 		HashTags     []string
 		PostStatus   bool
 		PostPriority bool
-		Duration	float64
 		CreatedOn    time.Time
 		UpdatedOn    time.Time
 		ScheduleId   string
