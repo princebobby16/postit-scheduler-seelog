@@ -3,21 +3,34 @@ package models
 import "time"
 
 type (
+
+	PostsWithPermission struct {
+		Posts []Post
+		PostToFeed bool
+	}
+
+	SinglePostWithPermission struct {
+		Post Post
+		PostToFeed bool
+	}
+
 	Post struct {
+		ScheduleId   string
 		PostId       string
 		PostMessage  string
 		PostImage    []byte
+		ImageExtension string
 		HashTags     []string
 		PostStatus   bool
 		PostPriority bool
 		CreatedOn    time.Time
 		UpdatedOn    time.Time
-		ScheduleId   string
 	}
 
 	PostSchedule struct {
 		ScheduleId    string    `json:"schedule_id"`
 		ScheduleTitle string    `json:"schedule_title"`
+		PostToFeed bool 		`json:"post_to_feed"`
 		From          time.Time `json:"from"`
 		To            time.Time `json:"to"`
 		PostIds       []string  `json:"post_ids"`
