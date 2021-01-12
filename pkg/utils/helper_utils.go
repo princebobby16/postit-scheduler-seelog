@@ -221,14 +221,14 @@ func Page(post models.Post, s string) error {
 			return err
 		}
 
-		_, err = fb.Post("/me/feed", fb.Params{
-			"message":      postMessage,
-			//"url": "",
-			"access_token": s,
-		})
-		if err != nil {
-			return err
-		}
+		//_, err = fb.Post("/me/feed", fb.Params{
+		//	"message":      postMessage,
+		//	//"url": "",
+		//	"access_token": s,
+		//})
+		//if err != nil {
+		//	return err
+		//}
 	}
 
 	return nil
