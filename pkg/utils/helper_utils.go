@@ -196,6 +196,8 @@ func Page(post models.Post, s string) error {
 		return err
 	}
 
+	log.Println(postMessage)
+
 	if post.ImageExtension == "" {
 		//_, err = fb.Post("/me", fb.Params{
 		//	"message":      postMessage,
