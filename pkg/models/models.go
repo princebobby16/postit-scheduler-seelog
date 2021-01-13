@@ -4,6 +4,29 @@ import "time"
 
 type (
 
+	FBPData struct {
+		Data []FacebookPageData 		`json:"data"`
+	}
+
+	FacebookPageData struct {
+		AccessToken string		`json:"access_token"`
+		Category string 		`json:"category"`
+		CategoryList []Things 	`json:"category_list"`
+		Name string				`json:"name"`
+		Id string				`json:"id"`
+		Tasks []string			`json:"tasks"`
+	}
+
+	Things struct {
+		Id string			`json:"id"`
+		Name string 		`json:"name"`
+	}
+
+	FacebookUserData struct {
+		UserId string
+		AccessToken string
+	}
+
 	PostsWithPermission struct {
 		Posts []Post
 		PostToFeed bool

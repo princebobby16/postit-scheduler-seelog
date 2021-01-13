@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/huandu/facebook"
 	"github.com/lib/pq"
-	"github.com/twinj/uuid"
 	"io/ioutil"
 	"log"
 	"os"
@@ -18,13 +18,14 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 	if schedule.ScheduleId != "" {
 		/* Get all schedules that aren't due yet */
 		if !schedule.To.Before(time.Now()) {
-			//time.Sleep(time.Minute * time.Duration(schedule.From.Minute()))
 			// if the schedule is due
 			if schedule.From.Before(time.Now()) || schedule.From.Equal(time.Now()) {
 				// Do this
 				log.Println("Schedule is due")
+				// Build the query
 				stmt := fmt.Sprintf("SELECT * FROM %s.scheduled_post WHERE scheduled_post_id = $1", namespace)
 				log.Println(stmt)
+				//query the db
 				rows, err := connection.Query(stmt, schedule.ScheduleId)
 				if err != nil {
 					log.Println(err)
@@ -114,6 +115,7 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 func SchedulePosts(posts <- chan models.PostsWithPermission, posted <- chan bool, post chan <- models.SinglePostWithPermission, duration float64) {
 	// Listen for posts from the other goroutine
 	for p := range posts {
+		log.Println("Post With Permissions: ", p)
 
 		if p.Posts != nil {
 			for _, job := range p.Posts {
@@ -137,7 +139,7 @@ func SchedulePosts(posts <- chan models.PostsWithPermission, posted <- chan bool
 
 func SendPostToFaceBook(post <- chan models.SinglePostWithPermission, posted chan <- bool, namespace string, connection *sql.DB) {
 	for p := range post {
-		//log.Println("Posted", p, " From ", namespace)
+
 		err := PostToFacebook(p, namespace, connection)
 		if err != nil {
 			log.Println(err)
@@ -151,32 +153,35 @@ func SendPostToFaceBook(post <- chan models.SinglePostWithPermission, posted cha
 func PostToFacebook(post models.SinglePostWithPermission, namespace string, connection *sql.DB) error {
 
 	// use tenantNamespace to get access token
-	stmt := fmt.Sprintf("SELECT user_access_token FROM %s.application_info", namespace)
+	stmt := fmt.Sprintf("SELECT user_id, user_access_token FROM %s.application_info", namespace)
 	row, err := connection.Query(stmt)
 	if err != nil {
 		return err
 	}
 	log.Println(stmt)
 
-	var accessToken string
-	var accessTokens []string
+	var userData models.FacebookUserData
+	var userDataS []models.FacebookUserData
 	for row.Next() {
-		err = row.Scan(&accessToken)
+		err = row.Scan(&userData.UserId, &userData.AccessToken)
 		if err != nil {
 			return err
 		}
 
-		accessTokens = append(accessTokens, accessToken)
+		userDataS = append(userDataS, userData)
 	}
 
-	if accessTokens != nil {
-		for _, token := range accessTokens {
-			log.Println(token)
+	if userDataS != nil {
+		for _, data := range userDataS {
+			log.Println(data)
 
+			// Post ti the user's feed if post.PostToFeed is true
 			if post.PostToFeed {
-				err = Feed(post.Post, token)
+				err = Feed(post.Post, data.AccessToken)
 			}
-			err = Page(post.Post, token)
+
+			// Post to page
+			err = Page(post.Post, data.AccessToken, data.UserId)
 			if err != nil {
 				return err
 			}
@@ -190,47 +195,72 @@ func PostToFacebook(post models.SinglePostWithPermission, namespace string, conn
 	return nil
 }
 
-func Page(post models.Post, s string) error {
+func Page(post models.Post, token string, id string) error {
+
 	postMessage, err := GeneratePostMessageWithHashTags(post)
 	if err != nil {
 		return err
 	}
 
 	log.Println(postMessage)
+	log.Println("Posting to page")
 
-	if post.ImageExtension == "" {
-		//_, err = fb.Post("/me", fb.Params{
-		//	"message":      postMessage,
-		//	"access_token": s,
-		//})
-		//if err != nil {
-		//	return err
-		//}
-		log.Println("image Extension: ", post.ImageExtension)
+	// Get a list of pages first
+	result, err := facebook.Get("/" + id + "/accounts",
+		facebook.Params {
+			"access_token": token,
+		},
+	)
+	if err != nil {
+		return err
+	}
 
-	} else if post.ImageExtension != "" {
+	// Decode the data into fbPageData object
+	var fbPageData models.FBPData
+	err = result.Decode(&fbPageData)
+	if err != nil {
+		return err
+	}
 
-		log.Println("image Extension: ", post.ImageExtension)
+	log.Println(fbPageData)
 
-		blob, err := os.Create(uuid.NewV4().String() + "_fb." + post.ImageExtension)
-		if err != nil {
-			return err
+	for _, d := range fbPageData.Data {
+		if post.ImageExtension == "" {
+			_, err = facebook.Post("/" + d.Id + "/feed", facebook.Params{
+				"message":      postMessage,
+				"access_token": d.AccessToken,
+			})
+			if err != nil {
+				return err
+			}
+			log.Println("image Extension: ", post.ImageExtension)
+
+		} else if post.ImageExtension != "" {
+
+			log.Println("image Extension: ", post.ImageExtension)
+
+			log.Println("Post image")
+
+			blob, err := os.Create("pkg/img/" + post.PostId + "." + post.ImageExtension)
+			if err != nil {
+				return err
+			}
+
+			err = ioutil.WriteFile(blob.Name(), post.PostImage, os.ModeAppend)
+			if err != nil {
+				return err
+			}
+			log.Println(blob.Name())
+
+			_, err = facebook.Post("/" + d.Id + "/feed", facebook.Params{
+				"message":      postMessage,
+				"url": blob.Name(),
+				"access_token": d.AccessToken,
+			})
+			if err != nil {
+				return err
+			}
 		}
-		log.Println(blob.Name())
-
-		err = ioutil.WriteFile(blob.Name(), post.PostImage, os.ModeAppend)
-		if err != nil {
-			return err
-		}
-
-		//_, err = fb.Post("/me/feed", fb.Params{
-		//	"message":      postMessage,
-		//	//"url": "",
-		//	"access_token": s,
-		//})
-		//if err != nil {
-		//	return err
-		//}
 	}
 
 	return nil
@@ -243,28 +273,55 @@ func Feed(post models.Post, s string) error {
 		return err
 	}
 
-	log.Println("Posting to feed as well")
+	log.Println("Posting to feed")
 	log.Println(postMessage)
 
-	//_, err = fb.Post("/me/feed", fb.Params{
-	//	"message":      postMessage,
-	//	"access_token": s,
-	//})
-	//if err != nil {
-	//	return err
-	//}
+	if post.ImageExtension != "" {
+
+		log.Println("Post image")
+
+		blob, err := os.Create("pkg/img/" + post.PostId + "." + post.ImageExtension)
+		if err != nil {
+			return err
+		}
+
+		err = ioutil.WriteFile(blob.Name(), post.PostImage, os.ModeAppend)
+		if err != nil {
+			return err
+		}
+		log.Println(blob.Name())
+
+		_, err = facebook.Post("/me", facebook.Params {
+			"message":      postMessage,
+			"url": blob.Name(),
+			"access_token": s,
+		} )
+		if err != nil {
+			return err
+		}
+	} else {
+		log.Println("No Post Image")
+		_, err = facebook.Post("/me", facebook.Params {
+			"message":      postMessage,
+			"access_token": s,
+		} )
+	}
 
 	return nil
 }
 
 func GeneratePostMessageWithHashTags(post models.Post) (string, error) {
 	m := ""
+
 	for i := 0; i < len(post.HashTags); i++ {
+
 		if i == 0 {
 			m = post.PostMessage + "\n\n" + post.HashTags[i]
 		} else {
 			m += "\n" + post.HashTags[i]
 		}
+
 	}
+
 	return m, nil
 }

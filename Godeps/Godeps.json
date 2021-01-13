@@ -19,6 +19,11 @@
 			"Rev": "75dcda0896e109a2a22c9315bca3bb21b87b2ba5"
 		},
 		{
+			"ImportPath": "github.com/huandu/facebook",
+			"Comment": "v2.5.3-2-gaf47d4b",
+			"Rev": "af47d4b1447aaa45c9a5f1c5332cb028c5c286aa"
+		},
+		{
 			"ImportPath": "github.com/joho/godotenv",
 			"Comment": "v1.3.0-17-ga4d9cf1",
 			"Rev": "a4d9cf1d6d98b3f745684f5879cd3de920fece83"
