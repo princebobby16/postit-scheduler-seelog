@@ -252,9 +252,9 @@ func Page(post models.Post, token string, id string) error {
 			}
 			log.Println(blob.Name())
 
-			_, err = facebook.Post("/" + d.Id + "/feed", facebook.Params{
+			_, err = facebook.Post("/" + d.Id + "/photos", facebook.Params{
 				"message":      postMessage,
-				"url": blob.Name(),
+				"file": facebook.File(blob.Name()),
 				"access_token": d.AccessToken,
 			})
 			if err != nil {
@@ -291,9 +291,9 @@ func Feed(post models.Post, s string) error {
 		}
 		log.Println(blob.Name())
 
-		_, err = facebook.Post("/me", facebook.Params {
+		_, err = facebook.Post("/me/photos", facebook.Params {
 			"message":      postMessage,
-			"url": blob.Name(),
+			"file": facebook.File(blob.Name()),
 			"access_token": s,
 		} )
 		if err != nil {
