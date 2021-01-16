@@ -2,5 +2,4 @@
 .env
 log.txt
 app.yaml
-pkg/img/**
 
