@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"scheduler-microservice/pkg/models"
 	"time"
 )
@@ -251,9 +252,17 @@ func Page(post models.Post, token string, id string) error {
 			}
 			log.Println(blob.Name())
 
+			wd, err := os.Getwd()
+			if err != nil {
+				return err
+			}
+
+			completePath := filepath.Join(wd, blob.Name())
+			log.Println(completePath)
+
 			_, err = facebook.Post("/" + d.Id + "/photos", facebook.Params{
 				"message":      postMessage,
-				"file": facebook.File(blob.Name()),
+				"file": facebook.File(completePath),
 				"access_token": d.AccessToken,
 			})
 			if err != nil {
@@ -284,7 +293,7 @@ func Feed(post models.Post, s string, id string) error {
 
 		log.Println("Post image")
 
-		blob, err := os.Create("pkg/img/" + post.PostId + "." + post.ImageExtension)
+		blob, err := os.Create(post.PostId + "." + post.ImageExtension)
 		if err != nil {
 			return err
 		}
@@ -295,9 +304,17 @@ func Feed(post models.Post, s string, id string) error {
 		}
 		log.Println(blob.Name())
 
+		wd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+
+		completePath := filepath.Join(wd, blob.Name())
+		log.Println(completePath)
+
 		_, err = facebook.Post("/" + id + "/photos", facebook.Params {
 			"message":      postMessage,
-			"file": facebook.File(blob.Name()),
+			"file": facebook.File(completePath),
 			"access_token": s,
 		} )
 		if err != nil {
@@ -318,7 +335,6 @@ func GeneratePostMessageWithHashTags(post models.Post) (string, error) {
 	m := ""
 
 	if post.HashTags == nil {
-		log.Println("Empty hastags")
 		return post.PostMessage, nil
 	}
 
