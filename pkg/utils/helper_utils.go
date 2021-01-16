@@ -317,6 +317,11 @@ func Feed(post models.Post, s string, id string) error {
 func GeneratePostMessageWithHashTags(post models.Post) (string, error) {
 	m := ""
 
+	if post.HashTags == nil {
+		log.Println("Empty hastags")
+		return post.PostMessage, nil
+	}
+
 	for i := 0; i < len(post.HashTags); i++ {
 
 		if i == 0 {
