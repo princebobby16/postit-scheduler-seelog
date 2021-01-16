@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespace string, postsChannel chan <- models.PostsWithPermission) {
+func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespace string, postsChannel chan <- *models.PostsWithPermission) {
 	defer close(postsChannel)
 	if schedule.ScheduleId != "" {
 		/* Get all schedules that aren't due yet */
@@ -55,9 +55,8 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 
 					posts = append(posts, post)
 				}
-				log.Println(posts)
 
-				postWithPermission := models.PostsWithPermission{
+				postWithPermission := &models.PostsWithPermission{
 					Posts:      posts,
 					PostToFeed: schedule.PostToFeed,
 				}
@@ -99,9 +98,8 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 
 					posts = append(posts, post)
 				}
-				log.Println(posts)
 
-				postWithPermission := models.PostsWithPermission{
+				postWithPermission := &models.PostsWithPermission{
 					Posts:      posts,
 					PostToFeed: schedule.PostToFeed,
 				}
@@ -112,7 +110,7 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 	}
 }
 
-func SchedulePosts(posts <- chan models.PostsWithPermission, posted <- chan bool, post chan <- models.SinglePostWithPermission, duration float64) {
+func SchedulePosts(posts <- chan *models.PostsWithPermission, posted <- chan bool, post chan <- models.SinglePostWithPermission, duration float64) {
 	// Listen for posts from the other goroutine
 	for p := range posts {
 		log.Println("Post With Permissions: ", p)
@@ -139,6 +137,7 @@ func SchedulePosts(posts <- chan models.PostsWithPermission, posted <- chan bool
 
 func SendPostToFaceBook(post <- chan models.SinglePostWithPermission, posted chan <- bool, namespace string, connection *sql.DB) {
 	for p := range post {
+		log.Println(p)
 
 		err := PostToFacebook(p, namespace, connection)
 		if err != nil {

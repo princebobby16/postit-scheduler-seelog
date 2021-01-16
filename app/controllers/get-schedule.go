@@ -38,7 +38,7 @@ func GetSchedule(w http.ResponseWriter, r *http.Request) {
 	logs.Log("Schedule: ", schedule)
 
 	post := make(chan models.SinglePostWithPermission, 1)
-	posts := make(chan models.PostsWithPermission)
+	posts := make(chan *models.PostsWithPermission)
 	posted := make(chan bool)
 
 	go utils.HibernateSchedule(db.Connection, schedule, tenantNamespace, posts)
