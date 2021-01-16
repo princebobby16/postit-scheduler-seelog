@@ -177,7 +177,7 @@ func PostToFacebook(post models.SinglePostWithPermission, namespace string, conn
 
 			// Post ti the user's feed if post.PostToFeed is true
 			if post.PostToFeed {
-				err = Feed(post.Post, data.AccessToken)
+				err = Feed(post.Post, data.AccessToken, data.UserId)
 			}
 
 			// Post to page
@@ -260,13 +260,18 @@ func Page(post models.Post, token string, id string) error {
 			if err != nil {
 				return err
 			}
+			// Delete file
+			err = os.Remove(blob.Name())
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
 }
 
-func Feed(post models.Post, s string) error {
+func Feed(post models.Post, s string, id string) error {
 
 	postMessage, err := GeneratePostMessageWithHashTags(post)
 	if err != nil {
@@ -291,7 +296,7 @@ func Feed(post models.Post, s string) error {
 		}
 		log.Println(blob.Name())
 
-		_, err = facebook.Post("/me/photos", facebook.Params {
+		_, err = facebook.Post("/" + id + "/photos", facebook.Params {
 			"message":      postMessage,
 			"file": facebook.File(blob.Name()),
 			"access_token": s,
@@ -301,7 +306,7 @@ func Feed(post models.Post, s string) error {
 		}
 	} else {
 		log.Println("No Post Image")
-		_, err = facebook.Post("/me", facebook.Params {
+		_, err = facebook.Post("/" + id, facebook.Params {
 			"message":      postMessage,
 			"access_token": s,
 		} )
