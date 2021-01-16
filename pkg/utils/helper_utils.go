@@ -241,7 +241,7 @@ func Page(post models.Post, token string, id string) error {
 
 			log.Println("Post image")
 
-			blob, err := os.Create("pkg/img/" + post.PostId + "." + post.ImageExtension)
+			blob, err := os.Create(post.PostId + "." + post.ImageExtension)
 			if err != nil {
 				return err
 			}
