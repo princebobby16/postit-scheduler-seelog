@@ -10,9 +10,9 @@ var Logger see.LoggerInterface
 
 func init() {
 
-	common := "common.log"
-	critical := "critical.log"
-	errorLog := "error.log"
+	common := "pkg/logs/common.log"
+	critical := "pkg/logs/critical.log"
+	errorLog := "pkg/logs/error.log"
 	if _, err := os.Stat(common); !os.IsNotExist(err) {
 		// Do nothing
 	}
@@ -72,8 +72,7 @@ func loadAppConfig () {
 		<filter levels="error">
 			<console formatid="error"/>
 			<file path="./pkg/logs/error.log"/>
-			<smtp formatid="erroremail" senderaddress="shiftrgh@gmail.com" sendername="Scheduler Microservice" hostname="smtp
-				.gmail.com" hostport="587" username="shiftrgh@gmail.com" password="yoforreal.com">
+			<smtp formatid="erroremail" senderaddress="shiftrgh@gmail.com" sendername="Scheduler Microservice" hostname="smtp.gmail.com" hostport="587" username="shiftrgh@gmail.com" password="yoforreal.com">
 				<recipient address="shiftrgh@gmail.com"/>
 			</smtp>
 		</filter>
@@ -94,11 +93,11 @@ func loadAppConfig () {
 		
 	</outputs>
 	<formats>
-		<format id="plain" format="%Date/%Time [%LEVEL] %Msg%n" />
-		<format id="error" format="%Date/%Time [%LEVEL] %RelFile %Func %Line %Msg%n" />
-		<format id="critical" format="%Date/%Time [%LEVEL] %RelFile %Func %Line %Msg%n" />
-		<format id="erroremail" format="Minor error on our server! %n%Time %Date [%LEVEL] %FullPath %n%RelFile %n%File  %n%Func %n%Msg%n %nSent by PostIt Scheduler Micro-Service"/>
-		<format id="criticalemail" format="Critical error on our server! %n%Time %Date [%LEVEL] %FullPath %n%RelFile %n%File  %n%Func %n%Msg%n %nSent by PostIt Scheduler Micro-Service"/>
+		<format id="plain" format="%Date/%Time %EscM(46)[%LEVEL]%EscM(49) %Msg%n%EscM(0)" />
+		<format id="error" format="%Date/%Time %EscM(45)[%LEVEL]%EscM(49) %RelFile %Func %Line %Msg%n%EscM(0)" />
+		<format id="critical" format="%Date/%Time %EscM(45)[%LEVEL]%EscM(49) %RelFile %Func %Line %Msg%n%EscM(0)" />
+		<format id="erroremail" format="Minor error on our server! %n%n%Time %Date [%LEVEL] %FullPath %n%RelFile %n%File  %n%Func %n%Msg%n %nSent by PostIt Scheduler Micro-Service"/>
+		<format id="criticalemail" format="Critical error on our server! %n%n%Time %Date [%LEVEL] %FullPath %n%RelFile %n%File  %n%Func %n%Msg%n %nSent by PostIt Scheduler Micro-Service"/>
 	</formats>
 </seelog>
 `

@@ -117,7 +117,6 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 func SchedulePosts(posts <- chan *models.PostsWithPermission, posted <- chan bool, post chan <- models.SinglePostWithPermission, duration float64) {
 	// Listen for posts from the other goroutine
 	for p := range posts {
-		logs.Logger.Info("Post With Permissions: ", p)
 
 		if p.Posts != nil {
 			for _, job := range p.Posts {
@@ -147,7 +146,7 @@ func SchedulePosts(posts <- chan *models.PostsWithPermission, posted <- chan boo
 
 func SendPostToFaceBook(post <- chan models.SinglePostWithPermission, posted chan <- bool, namespace string, connection *sql.DB) {
 	for p := range post {
-		logs.Logger.Info(p)
+		logs.Logger.Info(p.Post.PostMessage, "Image Extension", p.Post.ImageExtension)
 
 		err := PostToFacebook(p, namespace, connection)
 		if err != nil {
@@ -337,6 +336,7 @@ func Feed(post models.Post, s string, id string) error {
 			"access_token": s,
 		} )
 		if err != nil {
+			logs.Logger.Error(err)
 			return err
 		}
 		err = os.Remove(completeImagePath)
@@ -349,7 +349,7 @@ func Feed(post models.Post, s string, id string) error {
 		_res, err := facebook.Post("/" + id, facebook.Params {
 			"message": postMessage,
 			"access_token": s,
-		} )
+		})
 		if err != nil {
 			return err
 		}

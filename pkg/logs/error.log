@@ -1,4 +1,0 @@
-1611056315415268800 [Error] Testing Error
-1611056423046358000 [Error] Testing Error
-1611059864241157400 [Error] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me/photos": dial tcp: lookup graph.facebook.com: no such host
-1611059900327345900 [Error] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me": dial tcp: lookup graph.facebook.com: no such host
