@@ -246,6 +246,7 @@ func Page(post models.Post, token string, id string) error {
 				"access_token": d.AccessToken,
 			})
 			if err != nil {
+				logs.Logger.Error(err)
 				return err
 			}
 			logs.Logger.Info("Posted: ", _res.Get("id"))
@@ -282,6 +283,7 @@ func Page(post models.Post, token string, id string) error {
 				"access_token": d.AccessToken,
 			})
 			if err != nil {
+				logs.Logger.Error(err)
 				return err
 			}
 			logs.Logger.Info("Posted: ", _res.Get("id"))
