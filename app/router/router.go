@@ -4,7 +4,6 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"scheduler-microservice/app/controllers"
-	"scheduler-microservice/pkg/logs"
 )
 
 //Route Create a single route object
@@ -49,7 +48,6 @@ func InitRoutes() *mux.Router {
 		var handler http.Handler
 
 		handler = route.Handler
-		handler = logs.HandlerLog(handler, route.Name)
 
 		router.Name(route.Name).
 			Methods(route.Method).

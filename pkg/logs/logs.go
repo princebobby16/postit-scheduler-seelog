@@ -1,72 +1,85 @@
 package logs
 
 import (
-	"fmt"
+	see "github.com/cihub/seelog"
 	"log"
-	"net/http"
-	"os"
-	"time"
 )
 
-func HandlerLog(inner http.Handler, name string) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		inner.ServeHTTP(w, r)
+var Logger see.LoggerInterface
 
-		elapsedTime := time.Since(start)
-
-		message := fmt.Sprintf(
-			"%s ==> Log Message: %s\t%s\t%s\t%s\t%s\t%s",
-			time.Now(),
-			r.Method,
-			r.RequestURI,
-			name,
-			elapsedTime,
-			r.Header.Get("Content-Type"),
-			r.RemoteAddr,
-		)
-		Log(message)
-	})
+func init() {
+	Logger = see.Disabled
+	loadAppConfig()
 }
 
-func logToFile(message, filename string) error {
-	message += "\n"
-	if _, err := os.Stat(filename); !os.IsNotExist(err) {
-		file, err := os.OpenFile(filename, os.O_WRONLY|os.O_APPEND, 666)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
+func loadAppConfig () {
 
-		_, err = file.WriteString(message)
-		if err != nil {
-			return err
-		}
+	appConfig := `
+<seelog type="sync">
+	<outputs>
+		<filter levels="trace">
+			<console formatid="plain"/>
+			<file path="./pkg/logs/common.log"/>
+		</filter>
 
-		return nil
-	}
+		<filter levels="info">
+			<console formatid="plain"/>
+			<file path="./pkg/logs/common.log"/>
+		</filter>
 
-	file, err := os.Create(filename)
+		<filter levels="warn">
+			<console formatid="plain" />
+			<file path="./pkg/logs/common.log"/>
+		</filter>
+
+		<filter levels="error">
+			<console formatid="error"/>
+			<file path="./pkg/logs/error.log"/>
+			<smtp formatid="erroremail" senderaddress="shiftrgh@gmail.com" sendername="Scheduler Microservice" hostname="smtp
+				.gmail.com" hostport="587" username="shiftrgh@gmail.com" password="yoforreal.com">
+				<recipient address="shiftrgh@gmail.com"/>
+			</smtp>
+		</filter>
+		
+		<filter levels="critical">
+			<console formatid="critical"/>
+			<file path="./pkg/logs/critical.log"/>
+			<smtp formatid="criticalemail" 
+				senderaddress="shiftrgh@gmail.com" 
+				sendername="Scheduler Microservice" 
+				hostname="smtp.gmail.com" 
+				hostport="587" 
+				username="shiftrgh@gmail.com" 
+				password="yoforreal.com">
+				<recipient address="shiftrgh@gmail.com"/>
+			</smtp>
+		</filter>
+		
+	</outputs>
+	<formats>
+		<format id="plain" format="%Date/%Time [%LEVEL] %Msg%n" />
+		<format id="error" format="%Date/%Time [%LEVEL] %RelFile %Func %Line %Msg%n" />
+		<format id="critical" format="%Date/%Time [%LEVEL] %RelFile %Func %Line %Msg%n" />
+		<format id="erroremail" format="Minor error on our server! %n%Time %Date [%LEVEL] %FullPath %n%RelFile %n%File  %n%Func %n%Msg%n %nSent by PostIt Scheduler Micro-Service"/>
+		<format id="criticalemail" format="Critical error on our server! %n%Time %Date [%LEVEL] %FullPath %n%RelFile %n%File  %n%Func %n%Msg%n %nSent by PostIt Scheduler Micro-Service"/>
+	</formats>
+</seelog>
+`
+
+	logger, err := see.LoggerFromConfigAsBytes([]byte(appConfig))
 	if err != nil {
-		return err
+		log.Println(err)
+		return
 	}
-	defer file.Close()
+	//err = see.ReplaceLogger(logger)
+	//if err != nil {
+	//	panic(err)
+	//	return
+	//}
 
-	_, err = file.WriteString(message)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	UseLog(logger)
 }
 
-func Log(messages ...interface{}) {
-		// for each message; store it in a defined format
-		message := fmt.Sprintf("%s ==> Log Message: %v\n", time.Now(), messages)
-		// write the message to a file
-		err := logToFile(message, "log.txt")
-		if err != nil {
-			log.Println(err)
-		}
-		log.Println(message)
+func UseLog(log see.LoggerInterface)  {
+	Logger = log
 }

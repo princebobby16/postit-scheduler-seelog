@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	_ "github.com/lib/pq"
-	"log"
 	"os"
 	"scheduler-microservice/pkg/logs"
 )
@@ -21,18 +20,19 @@ func Connect() {
 
 	err = db.Ping()
 	if err != nil {
-		log.Printf("Unable to connect to database")
+		_ = logs.Logger.Critical("Unable to connect to database")
 		panic(err)
 	}
 
-	logs.Log("Connected to Postgres DB successfully")
+	logs.Logger.Info("Connected to Postgres DB successfully")
 }
 
 func Disconnect() {
-	logs.Log("Attempting to disconnect from db....")
+	_ = logs.Logger.Warn("Attempting to disconnect from db....")
 	err := Connection.Close()
 	if err != nil {
-		logs.Log(err)
+		logs.Logger.Trace(err)
+		return
 	}
-	logs.Log("Disconnected from db successfully...")
+	logs.Logger.Info("Disconnected from db successfully...")
 }

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/twinj/uuid"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"scheduler-microservice/db"
 	"scheduler-microservice/pkg/logs"
@@ -15,27 +14,27 @@ import (
 
 func GetSchedule(w http.ResponseWriter, r *http.Request) {
 	transactionId := uuid.NewV4().String()
-	logs.Log("Transaction Id:", transactionId)
+	logs.Logger.Info("Transaction Id:", transactionId)
 
 	tenantNamespace := r.Header.Get("tenant-namespace")
-	logs.Log("Tenant Namespace:", tenantNamespace)
+	logs.Logger.Info("Tenant Namespace:", tenantNamespace)
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Println(err)
+		_ = logs.Logger.Error(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	log.Println(string(body))
+	logs.Logger.Info(string(body))
 
 	var schedule models.PostSchedule
 	err = json.Unmarshal(body, &schedule)
 	if err != nil {
-		log.Println(err)
+		_ = logs.Logger.Error(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	logs.Log("Schedule: ", schedule)
+	logs.Logger.Info("Schedule: ", schedule)
 
 	post := make(chan models.SinglePostWithPermission, 1)
 	posts := make(chan *models.PostsWithPermission)

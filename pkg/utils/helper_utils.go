@@ -7,9 +7,9 @@ import (
 	"github.com/huandu/facebook"
 	"github.com/lib/pq"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
+	"scheduler-microservice/pkg/logs"
 	"scheduler-microservice/pkg/models"
 	"time"
 )
@@ -22,19 +22,22 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 			// if the schedule is due
 			if schedule.From.Before(time.Now()) || schedule.From.Equal(time.Now()) {
 				// Do this
-				log.Println("Schedule is due")
+				logs.Logger.Info("Schedule is due")
 				// Build the query
 				stmt := fmt.Sprintf("SELECT * FROM %s.scheduled_post WHERE scheduled_post_id = $1", namespace)
-				log.Println(stmt)
+				logs.Logger.Info(stmt)
 				//query the db
 				rows, err := connection.Query(stmt, schedule.ScheduleId)
 				if err != nil {
-					log.Println(err)
+					err = logs.Logger.Critical(err)
+					if err != nil {
+						_ = logs.Logger.Error(err)
+					}
 					return
 				}
 
 				if rows.Err() != nil {
-					log.Println(rows.Err().Error())
+					logs.Logger.Error(rows.Err().Error())
 					return
 				}
 
@@ -64,20 +67,20 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 
 				postsChannel <- postWithPermission
 			} else {
-				log.Printf("About to wait for schedule for %v Seconds", schedule.From.Sub(time.Now()))
+				logs.Logger.Info("About to wait for schedule for %v Seconds", schedule.From.Sub(time.Now()))
 				//	wait till its due before sending
 				time.Sleep(schedule.From.Sub(time.Now()))
-				log.Println("Due now")
+				logs.Logger.Info("Due now")
 				stmt := fmt.Sprintf("SELECT * FROM %s.scheduled_post WHERE scheduled_post_id = $1", namespace)
-				log.Println(stmt)
+				logs.Logger.Info(stmt)
 				rows, err := connection.Query(stmt, schedule.ScheduleId)
 				if err != nil {
-					log.Println(err)
+					logs.Logger.Error(err)
 					return
 				}
 
 				if rows.Err() != nil {
-					log.Println(rows.Err().Error())
+					logs.Logger.Error(rows.Err().Error())
 					return
 				}
 
@@ -114,7 +117,7 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 func SchedulePosts(posts <- chan *models.PostsWithPermission, posted <- chan bool, post chan <- models.SinglePostWithPermission, duration float64) {
 	// Listen for posts from the other goroutine
 	for p := range posts {
-		log.Println("Post With Permissions: ", p)
+		logs.Logger.Info("Post With Permissions: ", p)
 
 		if p.Posts != nil {
 			for _, job := range p.Posts {
@@ -125,9 +128,15 @@ func SchedulePosts(posts <- chan *models.PostsWithPermission, posted <- chan boo
 				post <- singlePostWithPerm
 				time.Sleep(time.Duration(duration) * time.Second)
 				status := <- posted
-				log.Println(status)
+				logs.Logger.Info(status)
 				if status == false {
-					p.Posts = append(p.Posts, job)
+					logs.Logger.Info("Status false retrying ... ")
+				//	retry
+					singlePostWithPerm = models.SinglePostWithPermission{
+						Post:       job,
+						PostToFeed: p.PostToFeed,
+					}
+					post <- singlePostWithPerm
 				}
 			}
 			close(post)
@@ -138,11 +147,11 @@ func SchedulePosts(posts <- chan *models.PostsWithPermission, posted <- chan boo
 
 func SendPostToFaceBook(post <- chan models.SinglePostWithPermission, posted chan <- bool, namespace string, connection *sql.DB) {
 	for p := range post {
-		log.Println(p)
+		logs.Logger.Info(p)
 
 		err := PostToFacebook(p, namespace, connection)
 		if err != nil {
-			log.Println(err)
+			_ = logs.Logger.Critical(err)
 			posted <- false
 		} else {
 			posted <- true
@@ -158,7 +167,7 @@ func PostToFacebook(post models.SinglePostWithPermission, namespace string, conn
 	if err != nil {
 		return err
 	}
-	log.Println(stmt)
+	logs.Logger.Info(stmt)
 
 	var userData models.FacebookUserData
 	var userDataS []models.FacebookUserData
@@ -173,20 +182,27 @@ func PostToFacebook(post models.SinglePostWithPermission, namespace string, conn
 
 	if userDataS != nil {
 		for _, data := range userDataS {
-			log.Println(data)
+			logs.Logger.Info(data)
 
 			// Post ti the user's feed if post.PostToFeed is true
 			if post.PostToFeed {
+				logs.Logger.Info("Posting to Feed")
 				err = Feed(post.Post, data.AccessToken, data.UserId)
+				if err != nil {
+					logs.Logger.Critical(err)
+					return err
+				}
 			}
 
 			// Post to page
+			logs.Logger.Info("Posting to Page")
 			err = Page(post.Post, data.AccessToken, data.UserId)
 			if err != nil {
+				logs.Logger.Critical(err)
 				return err
 			}
 
-			log.Println("Posted")
+			logs.Logger.Info("Posted")
 		}
 	} else {
 		return errors.New("no facebook access tokens available")
@@ -201,10 +217,9 @@ func Page(post models.Post, token string, id string) error {
 	if err != nil {
 		return err
 	}
+	logs.Logger.Info(postMessage)
 
-	log.Println(postMessage)
-	log.Println("Posting to page")
-
+	logs.Logger.Info("Retrieving page info from facebook")
 	// Get a list of pages first
 	result, err := facebook.Get("/" + id + "/accounts",
 		facebook.Params {
@@ -222,54 +237,58 @@ func Page(post models.Post, token string, id string) error {
 		return err
 	}
 
-	log.Println(fbPageData)
+	logs.Logger.Info(fbPageData)
 
 	for _, d := range fbPageData.Data {
 		if post.ImageExtension == "" {
-			_, err = facebook.Post("/" + d.Id + "/feed", facebook.Params{
+			logs.Logger.Info("Posting Without Image")
+			_res, err := facebook.Post("/" + d.Id + "/feed", facebook.Params{
 				"message":      postMessage,
 				"access_token": d.AccessToken,
 			})
 			if err != nil {
 				return err
 			}
-			log.Println("image Extension: ", post.ImageExtension)
+			logs.Logger.Info("Posted: ", _res.Get("id"))
 
 		} else if post.ImageExtension != "" {
+			logs.Logger.Info("Posting With Image")
+			logs.Logger.Info("image Extension: ", post.ImageExtension)
 
-			log.Println("image Extension: ", post.ImageExtension)
-
-			log.Println("Post image")
-
+			logs.Logger.Info("Creating image file")
 			blob, err := os.Create(post.PostId + "." + post.ImageExtension)
 			if err != nil {
 				return err
 			}
 
+			logs.Logger.Info("Writing image content to file")
 			err = ioutil.WriteFile(blob.Name(), post.PostImage, os.ModeAppend)
 			if err != nil {
 				return err
 			}
-			log.Println(blob.Name())
+			logs.Logger.Info(blob.Name())
 
+			logs.Logger.Info("Getting image full path")
 			wd, err := os.Getwd()
 			if err != nil {
 				return err
 			}
 
-			completePath := filepath.Join(wd, blob.Name())
-			log.Println(completePath)
+			completeImagePath := filepath.Join(wd, blob.Name())
+			logs.Logger.Info(completeImagePath)
 
-			_, err = facebook.Post("/" + d.Id + "/photos", facebook.Params{
+			_res, err := facebook.Post("/" + d.Id + "/photos", facebook.Params{
 				"message":      postMessage,
-				"file": facebook.File(completePath),
+				"file": facebook.File(completeImagePath),
 				"access_token": d.AccessToken,
 			})
 			if err != nil {
 				return err
 			}
+			logs.Logger.Info("Posted: ", _res.Get("id"))
 			// Delete file
-			err = os.Remove(blob.Name())
+			logs.Logger.Info("Deleting Image File From Directory")
+			err = os.Remove(completeImagePath)
 			if err != nil {
 				return err
 			}
@@ -285,47 +304,56 @@ func Feed(post models.Post, s string, id string) error {
 	if err != nil {
 		return err
 	}
-
-	log.Println("Posting to feed")
-	log.Println(postMessage)
+	logs.Logger.Info(postMessage)
 
 	if post.ImageExtension != "" {
+		logs.Logger.Info("Posting With Image")
 
-		log.Println("Post image")
-
+		logs.Logger.Info("Creating image file")
 		blob, err := os.Create(post.PostId + "." + post.ImageExtension)
 		if err != nil {
 			return err
 		}
 
+		logs.Logger.Info("Writing image content to file")
 		err = ioutil.WriteFile(blob.Name(), post.PostImage, os.ModeAppend)
 		if err != nil {
 			return err
 		}
-		log.Println(blob.Name())
+		logs.Logger.Info(blob.Name())
 
+		logs.Logger.Info("Getting image full path")
 		wd, err := os.Getwd()
 		if err != nil {
 			return err
 		}
 
-		completePath := filepath.Join(wd, blob.Name())
-		log.Println(completePath)
+		completeImagePath := filepath.Join(wd, blob.Name())
+		logs.Logger.Info(completeImagePath)
 
-		_, err = facebook.Post("/" + id + "/photos", facebook.Params {
+		_res, err := facebook.Post("/" + id +"/photos", facebook.Params {
 			"message":      postMessage,
-			"file": facebook.File(completePath),
+			"file": facebook.File(completeImagePath),
 			"access_token": s,
 		} )
 		if err != nil {
 			return err
 		}
+		err = os.Remove(completeImagePath)
+		if err != nil {
+			return err
+		}
+		logs.Logger.Info("Posted: ", _res.Get("id"))
 	} else {
-		log.Println("No Post Image")
-		_, err = facebook.Post("/" + id, facebook.Params {
-			"message":      postMessage,
+		logs.Logger.Info("Posting Without Image")
+		_res, err := facebook.Post("/" + id, facebook.Params {
+			"message": postMessage,
 			"access_token": s,
 		} )
+		if err != nil {
+			return err
+		}
+		logs.Logger.Info("Posted: ", _res.Get("id"))
 	}
 
 	return nil

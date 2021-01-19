@@ -4,9 +4,64 @@
 	"GodepVersion": "v80",
 	"Deps": [
 		{
-			"ImportPath": "github.com/dgrijalva/jwt-go",
-			"Comment": "v3.2.0-20-gdc14462",
-			"Rev": "dc14462fd58732591c7fa58cc8496d6824316a82"
+			"ImportPath": "github.com/cihub/seelog",
+			"Comment": "v2.6-31-gf561c5e",
+			"Rev": "f561c5e57575bb1e0a2167028b7339b3a8d16fb4"
+		},
+		{
+			"ImportPath": "github.com/cihub/seelog/archive",
+			"Comment": "v2.6-31-gf561c5e",
+			"Rev": "f561c5e57575bb1e0a2167028b7339b3a8d16fb4"
+		},
+		{
+			"ImportPath": "github.com/cihub/seelog/archive/gzip",
+			"Comment": "v2.6-31-gf561c5e",
+			"Rev": "f561c5e57575bb1e0a2167028b7339b3a8d16fb4"
+		},
+		{
+			"ImportPath": "github.com/cihub/seelog/archive/tar",
+			"Comment": "v2.6-31-gf561c5e",
+			"Rev": "f561c5e57575bb1e0a2167028b7339b3a8d16fb4"
+		},
+		{
+			"ImportPath": "github.com/cihub/seelog/archive/zip",
+			"Comment": "v2.6-31-gf561c5e",
+			"Rev": "f561c5e57575bb1e0a2167028b7339b3a8d16fb4"
+		},
+		{
+			"ImportPath": "github.com/gobwas/httphead",
+			"Comment": "v0.1.0",
+			"Rev": "935b70b38dcb69f249f00f338774bf75822c090a"
+		},
+		{
+			"ImportPath": "github.com/gobwas/pool",
+			"Comment": "v0.2.1",
+			"Rev": "cd2fb0a117357da7830c32f332c8520db8e2827d"
+		},
+		{
+			"ImportPath": "github.com/gobwas/pool/internal/pmath",
+			"Comment": "v0.2.1",
+			"Rev": "cd2fb0a117357da7830c32f332c8520db8e2827d"
+		},
+		{
+			"ImportPath": "github.com/gobwas/pool/pbufio",
+			"Comment": "v0.2.1",
+			"Rev": "cd2fb0a117357da7830c32f332c8520db8e2827d"
+		},
+		{
+			"ImportPath": "github.com/gobwas/pool/pbytes",
+			"Comment": "v0.2.1",
+			"Rev": "cd2fb0a117357da7830c32f332c8520db8e2827d"
+		},
+		{
+			"ImportPath": "github.com/gobwas/ws",
+			"Comment": "v1.1.0-rc.1",
+			"Rev": "e5bc048aff8312364cf900036c0381f791a9888a"
+		},
+		{
+			"ImportPath": "github.com/gobwas/ws/wsutil",
+			"Comment": "v1.1.0-rc.1",
+			"Rev": "e5bc048aff8312364cf900036c0381f791a9888a"
 		},
 		{
 			"ImportPath": "github.com/gorilla/handlers",
@@ -56,6 +111,14 @@
 		{
 			"ImportPath": "golang.org/x/net/context",
 			"Rev": "7e3656a0809f6f95abd88ac65313578f80b00df2"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/internal/unsafeheader",
+			"Rev": "db71ae66460a04c3f3c9b9228bd20a331ef70ac0"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "db71ae66460a04c3f3c9b9228bd20a331ef70ac0"
 		}
 	]
 }

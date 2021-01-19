@@ -1,0 +1,53 @@
+1611053927948368200 [Warn] http: Server closed
+1611056315421268100 [Critical] Testing Critical
+1611056423054358200 [Critical] Testing Critical
+1611059864239158900 [Critical] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me/photos": dial tcp: lookup graph.facebook.com: no such host
+1611059900326345500 [Critical] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me": dial tcp: lookup graph.facebook.com: no such host
+1611060859931638000 [Critical] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me/photos": dial tcp: lookup graph.facebook.com: no such host
+1611060859932640300 [Critical] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me/photos": dial tcp: lookup graph.facebook.com: no such host
+1611060909380312900 [Critical] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me/photos": dial tcp: lookup graph.facebook.com: no such host
+1611060909380312900 [Critical] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me/photos": dial tcp: lookup graph.facebook.com: no such host
+1611060960380311900 [Critical] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me": dial tcp: lookup graph.facebook.com: no such host
+1611060960380311900 [Critical] facebook: cannot reach facebook server; Post "https://graph.facebook.com/me": dial tcp: lookup graph.facebook.com: no such host
+1611062355357707900 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062355358707000 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062382331250600 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062382332251000 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062635194537400 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062635196538300 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062685773311500 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062685774311900 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062718990831600 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062718991832500 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062738196628800 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062738197628800 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611062760947745800 [Critical] facebook: Duplicate status message (code: 506; error_subcode: 1455006, error_user_title: Duplicate Status Update, error_user_msg: This status update is identical to the last one you posted. Try posting something different, or delete your previous update.)
+1611062760948753200 [Critical] facebook: Duplicate status message (code: 506; error_subcode: 1455006, error_user_title: Duplicate Status Update, error_user_msg: This status update is identical to the last one you posted. Try posting something different, or delete your previous update.)
+1611064174969009200 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611064178813340000 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611064248230794300 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611064249928295600 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611064291906754600 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611064294216043000 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611064306990769500 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611064314554202100 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611065212103971100 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611065242625827800 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611065274108795500 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611065288573616800 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611065532121604700 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611065537226936200 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611065555648160700 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611065561700506200 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611065579782056400 [Critical] facebook: Duplicate status message (code: 506; error_subcode: 1455006, error_user_title: Duplicate Status Update, error_user_msg: This status update is identical to the last one you posted. Try posting something different, or delete your previous update.)
+1611065584625459700 [Critical] facebook: Duplicate status message (code: 506; error_subcode: 1455006, error_user_title: Duplicate Status Update, error_user_msg: This status update is identical to the last one you posted. Try posting something different, or delete your previous update.)
+1611066145234644300 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611066153850190000 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611066225451247500 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611066229128541000 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611066288122202400 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611066291169376300 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611066324182172400 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611066332159882500 [Critical] facebook: (#200) This endpoint is deprecated since the required permission publish_actions is deprecated (code: 200; error_subcode: 0, error_user_title: , error_user_msg: )
+1611066362549166300 [Critical] facebook: Duplicate status message (code: 506; error_subcode: 1455006, error_user_title: Duplicate Status Update, error_user_msg: This status update is identical to the last one you posted. Try posting something different, or delete your previous update.)
+1611066364936712100 [Critical] facebook: Duplicate status message (code: 506; error_subcode: 1455006, error_user_title: Duplicate Status Update, error_user_msg: This status update is identical to the last one you posted. Try posting something different, or delete your previous update.)

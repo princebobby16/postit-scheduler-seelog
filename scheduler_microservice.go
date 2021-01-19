@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	see "github.com/cihub/seelog"
 	"github.com/gorilla/handlers"
 	_ "github.com/joho/godotenv/autoload"
 	"golang.org/x/net/context"
@@ -17,6 +17,7 @@ import (
 )
 
 func main() {
+	defer logs.Logger.Flush()
 	var wait time.Duration
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 	flag.Parse()
@@ -40,7 +41,6 @@ func main() {
 		"tenant-namespace",
 		"trace-id",
 	})
-
 	methods := handlers.AllowedMethods([]string{
 		http.MethodPost,
 		http.MethodGet,
@@ -53,7 +53,7 @@ func main() {
 	var port string
 	port = os.Getenv("PORT")
 	if port == "" {
-		logs.Log("Defaulting to port 7894")
+		logs.Logger.Warn("Defaulting to port 7894")
 		port = "7894"
 	}
 
@@ -74,9 +74,12 @@ func main() {
 	defer db.Disconnect()
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
-		logs.Log("Server running on port", address)
+		logs.Logger.Info("Server running on port", address)
 		if err := server.ListenAndServe(); err != nil {
-			logs.Log(err)
+			a := see.Warn(err)
+			if a != nil {
+				see.Info(a)
+			}
 		}
 	}()
 
@@ -99,17 +102,6 @@ func main() {
 	// Optionally, you could run server.Shutdown in a goroutine and block on
 	// <-ctx.Done() if your application should wait for other services
 	// to finalize based on context cancellation.
-	logs.Log("shutting down")
+	logs.Logger.Warn("shutting down")
 	os.Exit(0)
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-	_, err := fmt.Fprint(w, "Hello, World!")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
 }
