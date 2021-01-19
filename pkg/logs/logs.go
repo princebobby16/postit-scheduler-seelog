@@ -3,11 +3,48 @@ package logs
 import (
 	see "github.com/cihub/seelog"
 	"log"
+	"os"
 )
 
 var Logger see.LoggerInterface
 
 func init() {
+
+	common := "common.log"
+	critical := "critical.log"
+	errorLog := "error.log"
+	if _, err := os.Stat(common); !os.IsNotExist(err) {
+		// Do nothing
+	}
+
+	file, err := os.Create(common)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer file.Close()
+	if _, err := os.Stat(critical); !os.IsNotExist(err) {
+		// Do nothing
+	}
+
+	file, err = os.Create(critical)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer file.Close()
+
+	if _, err := os.Stat(errorLog); !os.IsNotExist(err) {
+		// Do nothing
+	}
+
+	file, err = os.Create(errorLog)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer file.Close()
+	
 	Logger = see.Disabled
 	loadAppConfig()
 }
