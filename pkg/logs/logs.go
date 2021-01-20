@@ -72,7 +72,13 @@ func loadAppConfig () {
 		<filter levels="error">
 			<console formatid="error"/>
 			<file path="./pkg/logs/error.log"/>
-			<smtp formatid="erroremail" senderaddress="shiftrgh@gmail.com" sendername="Scheduler Microservice" hostname="smtp.gmail.com" hostport="587" username="shiftrgh@gmail.com" password="yoforreal.com">
+			<smtp formatid="erroremail" 
+				senderaddress="shiftrgh@gmail.com" 
+				sendername="Scheduler Microservice" 
+				hostname="smtp.mailgun.org" 
+				hostport="587" 
+				username="shiftrgh@gmail.com" 
+				password="yoforreal.com">
 				<recipient address="shiftrgh@gmail.com"/>
 			</smtp>
 		</filter>
@@ -83,7 +89,7 @@ func loadAppConfig () {
 			<smtp formatid="criticalemail" 
 				senderaddress="shiftrgh@gmail.com" 
 				sendername="Scheduler Microservice" 
-				hostname="smtp.gmail.com" 
+				hostname="smtp.mailgun.org" 
 				hostport="587" 
 				username="shiftrgh@gmail.com" 
 				password="yoforreal.com">
