@@ -75,7 +75,7 @@ func loadAppConfig () {
 			<smtp formatid="erroremail" 
 				senderaddress="shiftrgh@gmail.com" 
 				sendername="Scheduler Microservice" 
-				hostname="smtp.mailgun.org" 
+				hostname="smtp.gmail.org" 
 				hostport="587" 
 				username="shiftrgh@gmail.com" 
 				password="yoforreal.com">
@@ -89,7 +89,7 @@ func loadAppConfig () {
 			<smtp formatid="criticalemail" 
 				senderaddress="shiftrgh@gmail.com" 
 				sendername="Scheduler Microservice" 
-				hostname="smtp.mailgun.org" 
+				hostname="smtp.gmail.org" 
 				hostport="587" 
 				username="shiftrgh@gmail.com" 
 				password="yoforreal.com">
@@ -100,7 +100,7 @@ func loadAppConfig () {
 	</outputs>
 	<formats>
 		<format id="plain" format="%Date/%Time %EscM(46)[%LEVEL]%EscM(49) %Msg%n%EscM(0)" />
-		<format id="error" format="%Date/%Time %EscM(45)[%LEVEL]%EscM(49) %RelFile %Func %Line %Msg%n%EscM(0)" />
+		<format id="error" format="%Date/%Time [%LEVEL]%EscM %RelFile %Func %Line %Msg%n" />
 		<format id="critical" format="%Date/%Time %EscM(45)[%LEVEL]%EscM(49) %RelFile %Func %Line %Msg%n%EscM(0)" />
 		<format id="erroremail" format="Minor error on our server! %n%n%Time %Date [%LEVEL] %FullPath %n%RelFile %n%File  %n%Func %n%Msg%n %nSent by PostIt Scheduler Micro-Service"/>
 		<format id="criticalemail" format="Critical error on our server! %n%n%Time %Date [%LEVEL] %FullPath %n%RelFile %n%File  %n%Func %n%Msg%n %nSent by PostIt Scheduler Micro-Service"/>
