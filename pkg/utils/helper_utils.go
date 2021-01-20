@@ -348,7 +348,7 @@ func Feed(post models.Post, s string, id string) error {
 		logs.Logger.Info("Posted: ", _res.Get("id"))
 	} else {
 		logs.Logger.Info("Posting Without Image")
-		_res, err := facebook.Post("/" + id, facebook.Params {
+		_res, err := facebook.Post("/" + id + "/feed", facebook.Params {
 			"message": postMessage,
 			"access_token": s,
 		})
