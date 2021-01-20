@@ -75,7 +75,7 @@ func loadAppConfig () {
 			<smtp formatid="erroremail" 
 				senderaddress="shiftrgh@gmail.com" 
 				sendername="Scheduler Microservice" 
-				hostname="smtp.gmail.org" 
+				hostname="smtp.gmail.com" 
 				hostport="587" 
 				username="shiftrgh@gmail.com" 
 				password="yoforreal.com">
@@ -89,7 +89,7 @@ func loadAppConfig () {
 			<smtp formatid="criticalemail" 
 				senderaddress="shiftrgh@gmail.com" 
 				sendername="Scheduler Microservice" 
-				hostname="smtp.gmail.org" 
+				hostname="smtp.gmail.om" 
 				hostport="587" 
 				username="shiftrgh@gmail.com" 
 				password="yoforreal.com">
