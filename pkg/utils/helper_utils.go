@@ -119,24 +119,19 @@ func SchedulePosts(posts <- chan *models.PostsWithPermission, posted <- chan boo
 	for p := range posts {
 
 		if p.Posts != nil {
-			for _, job := range p.Posts {
+			for i := 0; i < len(p.Posts); i++ {
 				singlePostWithPerm := models.SinglePostWithPermission{
-					Post:       job,
+					Post:       p.Posts[i],
 					PostToFeed: p.PostToFeed,
 				}
+
 				post <- singlePostWithPerm
-				time.Sleep(time.Duration(duration) * time.Second)
 				status := <- posted
-				logs.Logger.Info(status)
-				if status == false {
-					logs.Logger.Info("Status false retrying ... ")
-				//	retry
-					singlePostWithPerm = models.SinglePostWithPermission{
-						Post:       job,
-						PostToFeed: p.PostToFeed,
-					}
-					post <- singlePostWithPerm
+				if !status {
+					logs.Logger.Warn("Unable to post... Queueing...")
+					p.Posts = append(p.Posts, p.Posts[i])
 				}
+				time.Sleep(time.Duration(duration) * time.Second)
 			}
 			close(post)
 		}
@@ -185,15 +180,15 @@ func PostToFacebook(post models.SinglePostWithPermission, namespace string, conn
 
 			// Post ti the user's feed if post.PostToFeed is true
 			if post.PostToFeed {
-				logs.Logger.Info("Posting to Feed")
-				err = Feed(post.Post, data.AccessToken, data.UserId)
-				if err != nil {
-					logs.Logger.Critical(err)
-					return err
-				}
+				//logs.Logger.Info("Posting to Feed")
+				//err = Feed(post.Post, data.AccessToken, data.UserId)
+				//if err != nil {
+				//	logs.Logger.Critical(err)
+				//	return err
+				//}
 			}
 
-			// Post to page
+			//Post to page
 			logs.Logger.Info("Posting to Page")
 			err = Page(post.Post, data.AccessToken, data.UserId)
 			if err != nil {
