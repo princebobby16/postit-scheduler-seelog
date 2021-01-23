@@ -178,21 +178,11 @@ func PostToFacebook(post models.SinglePostWithPermission, namespace string, conn
 		for _, data := range userDataS {
 			logs.Logger.Info(data)
 
-			// Post ti the user's feed if post.PostToFeed is true
-			if post.PostToFeed {
-				//logs.Logger.Info("Posting to Feed")
-				//err = Feed(post.Post, data.AccessToken, data.UserId)
-				//if err != nil {
-				//	logs.Logger.Critical(err)
-				//	return err
-				//}
-			}
-
 			//Post to page
 			logs.Logger.Info("Posting to Page")
 			err = Page(post.Post, data.AccessToken, data.UserId)
 			if err != nil {
-				logs.Logger.Critical(err)
+				_ = logs.Logger.Critical(err)
 				return err
 			}
 
