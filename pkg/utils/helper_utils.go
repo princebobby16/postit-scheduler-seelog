@@ -223,62 +223,67 @@ func Page(post models.Post, token string, id string) error {
 
 	logs.Logger.Info(fbPageData)
 
-	for _, d := range fbPageData.Data {
-		if post.ImageExtension == "" {
-			logs.Logger.Info("Posting Without Image")
-			_res, err := facebook.Post("/" + d.Id + "/feed", facebook.Params{
-				"message":      postMessage,
-				"access_token": d.AccessToken,
-			})
-			if err != nil {
-				logs.Logger.Error(err)
-				return err
-			}
-			logs.Logger.Info("Posted: ", _res.Get("id"))
+	if fbPageData.Data != nil {
+		for _, d := range fbPageData.Data {
+			if post.ImageExtension == "" {
+				logs.Logger.Info("Posting Without Image")
+				_res, err := facebook.Post("/" + d.Id + "/feed", facebook.Params{
+					"message":      postMessage,
+					"access_token": d.AccessToken,
+				})
+				if err != nil {
+					logs.Logger.Error(err)
+					return err
+				}
+				logs.Logger.Info("Posted: ", _res.Get("id"))
 
-		} else if post.ImageExtension != "" {
-			logs.Logger.Info("Posting With Image")
-			logs.Logger.Info("image Extension: ", post.ImageExtension)
+			} else if post.ImageExtension != "" {
+				logs.Logger.Info("Posting With Image")
+				logs.Logger.Info("image Extension: ", post.ImageExtension)
 
-			logs.Logger.Info("Creating image file")
-			blob, err := os.Create(post.PostId + "." + post.ImageExtension)
-			if err != nil {
-				return err
-			}
+				logs.Logger.Info("Creating image file")
+				blob, err := os.Create(post.PostId + "." + post.ImageExtension)
+				if err != nil {
+					return err
+				}
 
-			logs.Logger.Info("Writing image content to file")
-			err = ioutil.WriteFile(blob.Name(), post.PostImage, os.ModeAppend)
-			if err != nil {
-				return err
-			}
-			logs.Logger.Info(blob.Name())
+				logs.Logger.Info("Writing image content to file")
+				err = ioutil.WriteFile(blob.Name(), post.PostImage, os.ModeAppend)
+				if err != nil {
+					return err
+				}
+				logs.Logger.Info(blob.Name())
 
-			logs.Logger.Info("Getting image full path")
-			wd, err := os.Getwd()
-			if err != nil {
-				return err
-			}
+				logs.Logger.Info("Getting image full path")
+				wd, err := os.Getwd()
+				if err != nil {
+					return err
+				}
 
-			completeImagePath := filepath.Join(wd, blob.Name())
-			logs.Logger.Info(completeImagePath)
+				completeImagePath := filepath.Join(wd, blob.Name())
+				logs.Logger.Info(completeImagePath)
 
-			_res, err := facebook.Post("/" + d.Id + "/photos", facebook.Params{
-				"message":      postMessage,
-				"file": facebook.File(completeImagePath),
-				"access_token": d.AccessToken,
-			})
-			if err != nil {
-				logs.Logger.Error(err)
-				return err
-			}
-			logs.Logger.Info("Posted: ", _res.Get("id"))
-			// Delete file
-			logs.Logger.Info("Deleting Image File From Directory")
-			err = os.Remove(completeImagePath)
-			if err != nil {
-				return err
+				_res, err := facebook.Post("/" + d.Id + "/photos", facebook.Params{
+					"message":      postMessage,
+					"file": facebook.File(completeImagePath),
+					"access_token": d.AccessToken,
+				})
+				if err != nil {
+					logs.Logger.Error(err)
+					return err
+				}
+				logs.Logger.Info("Posted: ", _res.Get("id"))
+				// Delete file
+				logs.Logger.Info("Deleting Image File From Directory")
+				err = os.Remove(completeImagePath)
+				if err != nil {
+					return err
+				}
 			}
 		}
+	} else {
+		logs.Logger.Warn("No Facebook Pages Found")
+		return errors.New("no facebook pages found")
 	}
 
 	return nil
