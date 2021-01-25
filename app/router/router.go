@@ -36,12 +36,6 @@ func InitRoutes() *mux.Router {
 			Method:  http.MethodPost,
 			Handler: controllers.GetSchedule,
 		},
-		Route {
-			Name: "Schedule status websocket handler",
-			Path: "/schedule-status",
-			Method: http.MethodPost,
-			Handler: controllers.ScheduleStatus,
-		},
 	}
 
 	for _, route := range routes {

@@ -28,11 +28,13 @@ type (
 	}
 
 	PostsWithPermission struct {
+		ScheduleId string
 		Posts []Post
 		PostToFeed bool
 	}
 
 	SinglePostWithPermission struct {
+		ScheduleId string
 		Post Post
 		PostToFeed bool
 	}

@@ -23,8 +23,18 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 			if schedule.From.Before(time.Now()) || schedule.From.Equal(time.Now()) {
 				// Do this
 				logs.Logger.Info("Schedule is due")
+
+				// update the is_due status in the db
+				stmt := fmt.Sprintf("UPDATE %s.schedule SET is_due = $1 WHERE schedule_id = $2;", namespace)
+				logs.Logger.Info("Updating the isDue schedule status")
+				_, err := connection.Exec(stmt, true, schedule.ScheduleId)
+                if err != nil {
+                  _ = logs.Logger.Error(err)
+                  return
+                }
+
 				// Build the query
-				stmt := fmt.Sprintf("SELECT * FROM %s.scheduled_post WHERE scheduled_post_id = $1", namespace)
+				stmt = fmt.Sprintf("SELECT * FROM %s.scheduled_post WHERE scheduled_post_id = $1", namespace)
 				logs.Logger.Info(stmt)
 				//query the db
 				rows, err := connection.Query(stmt, schedule.ScheduleId)
@@ -71,7 +81,16 @@ func HibernateSchedule(connection *sql.DB, schedule models.PostSchedule, namespa
 				//	wait till its due before sending
 				time.Sleep(schedule.From.Sub(time.Now()))
 				logs.Logger.Info("Due now")
-				stmt := fmt.Sprintf("SELECT * FROM %s.scheduled_post WHERE scheduled_post_id = $1", namespace)
+
+				stmt := fmt.Sprintf("UPDATE %s.schedule SET is_due = $1 WHERE schedule_id = $2;", namespace)
+                logs.Logger.Info("Updating the isDue schedule status")
+                _, err := connection.Exec(stmt, true, schedule.ScheduleId)
+                if err != nil {
+                  _ = logs.Logger.Error(err)
+                  return
+                }
+
+                stmt = fmt.Sprintf("SELECT * FROM %s.scheduled_post WHERE scheduled_post_id = $1", namespace)
 				logs.Logger.Info(stmt)
 				rows, err := connection.Query(stmt, schedule.ScheduleId)
 				if err != nil {
@@ -145,10 +164,19 @@ func SendPostToFaceBook(post <- chan models.SinglePostWithPermission, posted cha
 
 		err := PostToFacebook(p, namespace, connection)
 		if err != nil {
-			_ = logs.Logger.Critical(err)
-			posted <- false
+		  _ = logs.Logger.Critical(err)
+		  posted <- false
 		} else {
-			posted <- true
+
+		  stmt := fmt.Sprintf("UPDATE %s.scheduled_post SET post_status = $1 WHERE scheduled_post_id = $2 AND post_id = $3;", namespace)
+
+		  _, err = connection.Exec(stmt, true, p.Post.ScheduleId, p.Post.PostId)
+          if err != nil {
+            logs.Logger.Error(err)
+            posted <- true
+          }
+
+		  posted <- true
 		}
 	}
 }
@@ -156,41 +184,41 @@ func SendPostToFaceBook(post <- chan models.SinglePostWithPermission, posted cha
 func PostToFacebook(post models.SinglePostWithPermission, namespace string, connection *sql.DB) error {
 
 	// use tenantNamespace to get access token
-	stmt := fmt.Sprintf("SELECT user_id, user_access_token FROM %s.application_info", namespace)
-	row, err := connection.Query(stmt)
-	if err != nil {
-		return err
-	}
-	logs.Logger.Info(stmt)
-
-	var userData models.FacebookUserData
-	var userDataS []models.FacebookUserData
-	for row.Next() {
-		err = row.Scan(&userData.UserId, &userData.AccessToken)
-		if err != nil {
-			return err
-		}
-
-		userDataS = append(userDataS, userData)
-	}
-
-	if userDataS != nil {
-		for _, data := range userDataS {
-			logs.Logger.Info(data)
-
-			//Post to page
-			logs.Logger.Info("Posting to Page")
-			err = Page(post.Post, data.AccessToken, data.UserId)
-			if err != nil {
-				_ = logs.Logger.Critical(err)
-				return err
-			}
-
-			logs.Logger.Info("Posted")
-		}
-	} else {
-		return errors.New("no facebook access tokens available")
-	}
+	//stmt := fmt.Sprintf("SELECT user_id, user_access_token FROM %s.application_info", namespace)
+	//row, err := connection.Query(stmt)
+	//if err != nil {
+	//	return err
+	//}
+	//logs.Logger.Info(stmt)
+    //
+	//var userData models.FacebookUserData
+	//var userDataS []models.FacebookUserData
+	//for row.Next() {
+	//	err = row.Scan(&userData.UserId, &userData.AccessToken)
+	//	if err != nil {
+	//		return err
+	//	}
+    //
+	//	userDataS = append(userDataS, userData)
+	//}
+    //
+	//if userDataS != nil {
+	//	for _, data := range userDataS {
+	//		logs.Logger.Info(data)
+    //
+	//		//Post to page
+	//		//logs.Logger.Info("Posting to Page")
+	//		//err = Page(post.Post, data.AccessToken, data.UserId)
+	//		//if err != nil {
+	//		//	_ = logs.Logger.Critical(err)
+	//		//	return err
+	//		//}
+    //
+	//		logs.Logger.Info("Posted")
+	//	}
+	//} else {
+	//	return errors.New("no facebook access tokens available")
+	//}
 
 	return nil
 }
